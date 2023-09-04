@@ -1,4 +1,7 @@
 import ProductsService from "../services/products.service.js";
+import CustomError from "../utils/errors/custom.errors.js";
+import EErrors from "../utils/errors/enum.errors.js";
+import { generateProductErrorInfo } from "../utils/errors/info.errors.js";
 
 const ps = new ProductsService();
 
@@ -63,14 +66,18 @@ export default class ProductsController {
             res.status(404).json({ error: `Producto no encontrado: ${error.message}` });
         }
     }
-
     static async createProduct(req, res) {
         const productData = req.body;
         try {
             const result = await ps.createProduct(productData);
             res.status(201).json({ message: 'Producto Creado', payload: result });
         } catch (error) {
-            res.status(500).json({ error: `Error al crear el producto: ${error.message}` });
+            CustomError.createError({
+                name: "Error de creación de producto",
+                cause: generateProductErrorInfo(productData),
+                message: "Error al tratar de crear el producto",
+                code: EErrors.INVALID_TYPES_ERROR
+            })
         }
     }
 
