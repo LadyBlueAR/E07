@@ -53,6 +53,7 @@ export default class ProductsController {
             res.json(response);
 
         } catch (error) {
+            req.logger.error("Error al obtener los productos");
             res.status(500).json({ error: `Error al obtener los productos: ${error.message}` });
         }
     }
@@ -63,6 +64,7 @@ export default class ProductsController {
             const product = await ps.getProductById(pid);
             res.json({ status: 'success', payload: product });
         } catch (error) {
+            req.logger.error("Producto no encontrado");
             res.status(404).json({ error: `Producto no encontrado: ${error.message}` });
         }
     }
@@ -86,8 +88,10 @@ export default class ProductsController {
         const newProductData = req.body;
         try {
             const result = await ps.updateProduct(pid, newProductData);
+            req.logger.info("Producto Actualizado");
             res.json({ message: 'Producto Actualizado', payload: result });
         } catch (error) {
+            req.logger.error("Error al actualizar el producto");
             res.status(500).json({ error: `Error al actualizar el producto: ${error.message}` });
         }
     }
@@ -96,8 +100,10 @@ export default class ProductsController {
         const { pid } = req.params;
         try {
             const result = await ps.deleteProduct(pid);
+            req.logger.info("Producto Eliminado");
             res.json({ message: 'Producto Eliminado', payload: result });
         } catch (error) {
+            req.logger.error("Error al eliminar el producto");
             res.status(500).json({ error: `Error al eliminar el producto: ${error.message}` });
         }
     }

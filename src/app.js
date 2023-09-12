@@ -9,9 +9,15 @@ import { messageModel } from './dao/mongo/models/messages.model.js';
 import passport from 'passport';
 import initializePassport from './config/passport.config.js';
 import config from './config/config.js';
+import { addLoggerDev } from './utils/loggers/logger.development.js';
+import { addLoggerProd } from './utils/loggers/logger.production.js';
 
 import router from './routes/index.js';
 import views from './routes/views.router.js';
+
+//logger
+const isDev = process.env.NODE_ENV === 'development';
+const addLogger = isDev ? addLoggerDev : addLoggerProd;
 
 const port = 8080;
 const messages = [];
@@ -31,6 +37,7 @@ app.set('view engine', 'handlebars');
 app.use(express.static(__dirname + '/public'));
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
+app.use(addLogger);
 
 //Session
 app.use (session ({
@@ -71,3 +78,4 @@ io.on('connection', async (socket) => {
         }
     });
 });
+
